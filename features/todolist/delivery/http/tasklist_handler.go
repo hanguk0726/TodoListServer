@@ -6,9 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"todolist-server/domain"
-	"todolist-server/dto"
 	"todolist-server/features/todolist/delivery/http/dto"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +19,11 @@ func NewTaskListHandler(r *gin.Engine, usecase domain.TaskListUsecase){
 		TaskListUsecase: usecase,
 	}
 	r.GET("/v1/taskLists/:userId", handler.GetTaskLists)
+	r.GET("/v1/taskLists/:taskListId/:userId", handler.GetTaskListById)
+	r.POST("/v1/taskLists/:userId", handler.InsertTaskList)
+	r.PUT("/v1/taskLists/:userId", handler.UpdateTaskList)
+	r.DELETE("/v1/taskLists/:userId", handler.DeleteTaskList)
+	r.POST("/v1/taskLists/:userId", handler.SynchronizeTaskList)
 }
 
 
@@ -81,33 +84,105 @@ func (h *TaskListHandler) InsertTaskList (c *gin.Context) {
 	json.Unmarshal([]byte(jsonData), &taskListDtos)
 
 
-
 	taskLists := make([]domain.TaskList, len(taskListDtos))
 
-	for i , v := range taskLists {
-		taskLists[i] = taskListDtos.ToTaskListDto(v)
+	for i , v := range taskListDtos {
+		taskLists[i] = v.ToTaskList()
 	}
-
 
 	h.TaskListUsecase.AddTaskList(userId, taskLists...)
 
 	c.Status(http.StatusOK)
 }
 
-// @GET("/v1/taskLists")
-// suspend fun getTaskLists(@Query("userId") userId: String): List<TaskListDto>
 
-// @GET("/v1/taskLists/{taskListId}")
-// suspend fun getTaskListById(@Path("taskListId") taskListId: Long, @Query("userId") userId: String) : TaskListDto
+func (h *TaskListHandler) DeleteTaskList (c *gin.Context) {
+	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 
-// @POST("/v1/taskLists")
-// suspend fun insertTaskList(vararg taskListDto: TaskListDto, @Query("userId") userId: String) : Call<ResponseBody>
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	jsonData, err := c.GetRawData()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// @DELETE("/v1/taskLists")
-// suspend fun deleteTaskList(vararg taskListDto: TaskListDto, @Query("userId") userId: String) : Call<ResponseBody>
+	var taskListDtos []dto.TaskListDto
 
-// @PUT("/v1/taskLists")
-// suspend fun updateTaskList(vararg taskListDto: TaskListDto, @Query("userId") userId: String) : Call<ResponseBody>
+	json.Unmarshal([]byte(jsonData), &taskListDtos)
 
-// @POST
-// suspend fun synchronizeTaskList(vararg taskListDto: TaskListDto, @Query("userId") userId: String) : Call<ResponseBody>
+
+	taskLists := make([]domain.TaskList, len(taskListDtos))
+
+	for i , v := range taskListDtos {
+		taskLists[i] = v.ToTaskList()
+	}
+
+
+	h.TaskListUsecase.DeleteTaskList(userId, taskLists...)
+
+	c.Status(http.StatusOK)
+}
+
+
+func (h *TaskListHandler) UpdateTaskList (c *gin.Context) {
+	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	jsonData, err := c.GetRawData()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var taskListDtos []dto.TaskListDto
+
+	json.Unmarshal([]byte(jsonData), &taskListDtos)
+
+
+
+	taskLists := make([]domain.TaskList, len(taskListDtos))
+
+	for i , v := range taskListDtos {
+		taskLists[i] = v.ToTaskList()
+	}
+
+
+	h.TaskListUsecase.UpdateTaskList(userId, taskLists...)
+
+	c.Status(http.StatusOK)
+}
+
+
+func (h *TaskListHandler) SynchronizeTaskList (c *gin.Context) {
+	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	jsonData, err := c.GetRawData()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var taskListDtos []dto.TaskListDto
+
+	json.Unmarshal([]byte(jsonData), &taskListDtos)
+
+
+	taskLists := make([]domain.TaskList, len(taskListDtos))
+
+	for i , v := range taskListDtos {
+		taskLists[i] = v.ToTaskList()
+	}
+
+	h.TaskListUsecase.UpdateTaskList(userId, taskLists...)
+
+	c.Status(http.StatusOK)
+}
+
+
