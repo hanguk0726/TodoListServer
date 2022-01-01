@@ -2,19 +2,19 @@ package http
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
 	"todolist-server/domain"
 	"todolist-server/features/todolist/delivery/http/dto"
-	"github.com/gin-gonic/gin"
 )
 
 type TaskItemHandler struct {
 	TaskItemUsecase domain.TaskItemUsecase
 }
 
-func NewTaskItemHandler(r *gin.Engine, usecase domain.TaskItemUsecase){
+func NewTaskItemHandler(r *gin.Engine, usecase domain.TaskItemUsecase) {
 	handler := &TaskItemHandler{
 		TaskItemUsecase: usecase,
 	}
@@ -26,9 +26,7 @@ func NewTaskItemHandler(r *gin.Engine, usecase domain.TaskItemUsecase){
 	r.POST("/v1/taskLists/:userId", handler.SynchronizeTaskItem)
 }
 
-
-
-func (h *TaskItemHandler) GetTaskItemsByTaskListId (c *gin.Context) {
+func (h *TaskItemHandler) GetTaskItemsByTaskListId(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 
 	if err != nil {
@@ -45,14 +43,14 @@ func (h *TaskItemHandler) GetTaskItemsByTaskListId (c *gin.Context) {
 
 	taskItemDtos := make([]dto.TaskItemDto, len(taskItems))
 
-	for i , v := range taskItems {
+	for i, v := range taskItems {
 		taskItemDtos[i] = dto.ToTaskItemDto(v)
 	}
 
 	c.JSON(http.StatusOK, taskItemDtos)
 }
 
-func (h *TaskItemHandler) GetTaskItemById (c *gin.Context) {
+func (h *TaskItemHandler) GetTaskItemById(c *gin.Context) {
 
 	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 
@@ -66,21 +64,18 @@ func (h *TaskItemHandler) GetTaskItemById (c *gin.Context) {
 		log.Fatal(err)
 	}
 
-
 	taskItem := h.TaskItemUsecase.GetTaskItemById(userId, taskItemId)
-
 
 	c.JSON(http.StatusOK, dto.ToTaskItemDto(taskItem))
 }
 
-
-func (h *TaskItemHandler) InsertTaskItem (c *gin.Context) {
+func (h *TaskItemHandler) InsertTaskItem(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -90,10 +85,9 @@ func (h *TaskItemHandler) InsertTaskItem (c *gin.Context) {
 
 	json.Unmarshal([]byte(jsonData), &taskItemDtos)
 
-
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 
-	for i , v := range taskItemDtos {
+	for i, v := range taskItemDtos {
 		taskItems[i] = v.ToTaskItem()
 	}
 
@@ -102,14 +96,13 @@ func (h *TaskItemHandler) InsertTaskItem (c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-
-func (h *TaskItemHandler) DeleteTask (c *gin.Context) {
+func (h *TaskItemHandler) DeleteTask(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -119,27 +112,24 @@ func (h *TaskItemHandler) DeleteTask (c *gin.Context) {
 
 	json.Unmarshal([]byte(jsonData), &taskItemDtos)
 
-
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 
-	for i , v := range taskItemDtos {
+	for i, v := range taskItemDtos {
 		taskItems[i] = v.ToTaskItem()
 	}
-
 
 	h.TaskItemUsecase.DeleteTaskItem(userId, taskItems...)
 
 	c.Status(http.StatusOK)
 }
 
-
-func (h *TaskItemHandler) UpdateTaskItem (c *gin.Context) {
+func (h *TaskItemHandler) UpdateTaskItem(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -149,27 +139,24 @@ func (h *TaskItemHandler) UpdateTaskItem (c *gin.Context) {
 
 	json.Unmarshal([]byte(jsonData), &taskItemDtos)
 
-
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 
-	for i , v := range taskItemDtos {
+	for i, v := range taskItemDtos {
 		taskItems[i] = v.ToTaskItem()
 	}
-
 
 	h.TaskItemUsecase.UpdateTaskItem(userId, taskItems...)
 
 	c.Status(http.StatusOK)
 }
 
-
-func (h *TaskItemHandler) SynchronizeTaskItem (c *gin.Context) {
+func (h *TaskItemHandler) SynchronizeTaskItem(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -179,10 +166,9 @@ func (h *TaskItemHandler) SynchronizeTaskItem (c *gin.Context) {
 
 	json.Unmarshal([]byte(jsonData), &taskItemDtos)
 
-
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 
-	for i , v := range taskItemDtos {
+	for i, v := range taskItemDtos {
 		taskItems[i] = v.ToTaskItem()
 	}
 
@@ -190,4 +176,3 @@ func (h *TaskItemHandler) SynchronizeTaskItem (c *gin.Context) {
 
 	c.Status(http.StatusOK)
 }
-

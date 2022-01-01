@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,20 +11,20 @@ import (
 	// "net/http"
 )
 
-
 func main() {
-	context := context.Background()
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-	client, err := mongo.Connect(context, clientOptions)
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-	   log.Fatal(err)
+		log.Fatal(err)
 	}
- 
+
 	// Check the connection
-	err = client.Ping(context, nil)
- 
+	err = client.Ping(ctx, nil)
+
 	if err != nil {
-	   log.Fatal(err)
+		log.Fatal(err)
 	}
 
 	db := client.Database("todolist")
@@ -34,5 +35,8 @@ func main() {
 			"message": "pong",
 		})
 	})
-	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	err = router.Run()
+	if err != nil {
+		panic(err)
+	} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
