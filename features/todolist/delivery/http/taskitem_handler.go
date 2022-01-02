@@ -18,16 +18,16 @@ func NewTaskItemHandler(r *gin.Engine, usecase domain.TaskItemUsecase) {
 	handler := &TaskItemHandler{
 		TaskItemUsecase: usecase,
 	}
-	r.GET("/v1/taskLists/:userId", handler.GetTaskItemsByTaskListId)
-	r.GET("/v1/taskLists/:taskListId/:userId", handler.GetTaskItemById)
-	r.POST("/v1/taskLists/:userId", handler.InsertTaskItem)
-	r.PUT("/v1/taskLists/:userId", handler.UpdateTaskItem)
-	r.DELETE("/v1/taskLists/:userId", handler.DeleteTask)
-	r.POST("/v1/taskLists/:userId", handler.SynchronizeTaskItem)
+	r.GET("/v1/taskItems", handler.GetTaskItemsByTaskListId)
+	r.GET("/v1/taskItems/:taskListId", handler.GetTaskItemById)
+	r.POST("/v1/taskItems", handler.InsertTaskItem)
+	r.PUT("/v1/taskItems", handler.UpdateTaskItem)
+	r.DELETE("/v1/taskItems", handler.DeleteTask)
+	r.POST("/v1/taskItems/synchronizeTaskItem", handler.SynchronizeTaskItem)
 }
 
 func (h *TaskItemHandler) GetTaskItemsByTaskListId(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
+	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +52,7 @@ func (h *TaskItemHandler) GetTaskItemsByTaskListId(c *gin.Context) {
 
 func (h *TaskItemHandler) GetTaskItemById(c *gin.Context) {
 
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
+	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
@@ -70,12 +70,6 @@ func (h *TaskItemHandler) GetTaskItemById(c *gin.Context) {
 }
 
 func (h *TaskItemHandler) InsertTaskItem(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -91,18 +85,12 @@ func (h *TaskItemHandler) InsertTaskItem(c *gin.Context) {
 		taskItems[i] = v.ToTaskItem()
 	}
 
-	h.TaskItemUsecase.AddTaskItem(userId, taskItems...)
+	h.TaskItemUsecase.AddTaskItem(taskItems...)
 
 	c.Status(http.StatusOK)
 }
 
 func (h *TaskItemHandler) DeleteTask(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -118,18 +106,12 @@ func (h *TaskItemHandler) DeleteTask(c *gin.Context) {
 		taskItems[i] = v.ToTaskItem()
 	}
 
-	h.TaskItemUsecase.DeleteTaskItem(userId, taskItems...)
+	h.TaskItemUsecase.DeleteTaskItem(taskItems...)
 
 	c.Status(http.StatusOK)
 }
 
 func (h *TaskItemHandler) UpdateTaskItem(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -145,18 +127,12 @@ func (h *TaskItemHandler) UpdateTaskItem(c *gin.Context) {
 		taskItems[i] = v.ToTaskItem()
 	}
 
-	h.TaskItemUsecase.UpdateTaskItem(userId, taskItems...)
+	h.TaskItemUsecase.UpdateTaskItem(taskItems...)
 
 	c.Status(http.StatusOK)
 }
 
 func (h *TaskItemHandler) SynchronizeTaskItem(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -172,7 +148,7 @@ func (h *TaskItemHandler) SynchronizeTaskItem(c *gin.Context) {
 		taskItems[i] = v.ToTaskItem()
 	}
 
-	h.TaskItemUsecase.UpdateTaskItem(userId, taskItems...)
+	h.TaskItemUsecase.UpdateTaskItem(taskItems...)
 
 	c.Status(http.StatusOK)
 }

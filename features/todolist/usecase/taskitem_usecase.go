@@ -1,7 +1,6 @@
 package usecase
 
-import (	
-
+import (
 	"todolist-server/domain"
 )
 
@@ -13,22 +12,23 @@ func NewTaskItemUseCase(t domain.TaskItemRepository) domain.TaskItemUsecase {
 	return &taskItemUseCase{
 		taskItemRepository: t,
 	}
-} 
-
-
-func (t *taskItemUseCase) AddTaskItem(userId int64, taskItem ...domain.TaskItem) {
-
 }
 
-
-func (t *taskItemUseCase) DeleteTaskItem(userId int64, taskItem ...domain.TaskItem){
-
+func (t *taskItemUseCase) AddTaskItem(taskItem ...domain.TaskItem) {
+	t.taskItemRepository.AddTaskItem(taskItem...)
 }
 
-func (t *taskItemUseCase) GetTaskItemById(userId int64, taskItemId int64) domain.TaskItem
+func (t *taskItemUseCase) DeleteTaskItem(taskItem ...domain.TaskItem) {
+	t.taskItemRepository.DeleteTaskItem(taskItem...)
+}
 
-func (t *taskItemUseCase) GetTaskItemsByTaskListId(userId int64, taskListId int64) []domain.TaskItem 
+func (t *taskItemUseCase) UpdateTaskItem(taskItem ...domain.TaskItem) {
+	t.taskItemRepository.UpdateTaskItem(taskItem...)
+}
+func (t *taskItemUseCase) GetTaskItemById(userId int64, taskItemId int64) domain.TaskItem {
+	return t.taskItemRepository.GetTaskItemById(userId, taskItemId)
+}
 
-func (t *taskItemUseCase)  UpdateTaskItem(userId int64, taskItem ...domain.TaskItem){
-
+func (t *taskItemUseCase) GetTaskItemsByTaskListId(userId int64, taskListId int64) []domain.TaskItem {
+	return t.taskItemRepository.GetTaskItemsByTaskListId(userId, taskListId)
 }

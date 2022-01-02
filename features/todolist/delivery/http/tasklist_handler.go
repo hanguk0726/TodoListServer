@@ -18,16 +18,16 @@ func NewTaskListHandler(r *gin.Engine, usecase domain.TaskListUsecase) {
 	handler := &TaskListHandler{
 		TaskListUsecase: usecase,
 	}
-	r.GET("/v1/taskLists/:userId", handler.GetTaskLists)
-	r.GET("/v1/taskLists/:taskListId/:userId", handler.GetTaskListById)
-	r.POST("/v1/taskLists/:userId", handler.InsertTaskList)
-	r.PUT("/v1/taskLists/:userId", handler.UpdateTaskList)
-	r.DELETE("/v1/taskLists/:userId", handler.DeleteTaskList)
-	r.POST("/v1/taskLists/:userId", handler.SynchronizeTaskList)
+	r.GET("/v1/taskLists", handler.GetTaskLists)
+	r.GET("/v1/taskLists/:taskListId", handler.GetTaskListById)
+	r.POST("/v1/taskLists/", handler.InsertTaskList)
+	r.PUT("/v1/taskLists/", handler.UpdateTaskList)
+	r.DELETE("/v1/taskLists/", handler.DeleteTaskList)
+	r.POST("/v1/taskLists/synchronizeTaskList", handler.SynchronizeTaskList)
 }
 
 func (h *TaskListHandler) GetTaskLists(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
+	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +46,7 @@ func (h *TaskListHandler) GetTaskLists(c *gin.Context) {
 
 func (h *TaskListHandler) GetTaskListById(c *gin.Context) {
 
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
+	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
 
 	if err != nil {
 		log.Fatal(err)
@@ -64,12 +64,6 @@ func (h *TaskListHandler) GetTaskListById(c *gin.Context) {
 }
 
 func (h *TaskListHandler) InsertTaskList(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -85,18 +79,12 @@ func (h *TaskListHandler) InsertTaskList(c *gin.Context) {
 		taskLists[i] = v.ToTaskList()
 	}
 
-	h.TaskListUsecase.AddTaskList(userId, taskLists...)
+	h.TaskListUsecase.AddTaskList(taskLists...)
 
 	c.Status(http.StatusOK)
 }
 
 func (h *TaskListHandler) DeleteTaskList(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -112,18 +100,12 @@ func (h *TaskListHandler) DeleteTaskList(c *gin.Context) {
 		taskLists[i] = v.ToTaskList()
 	}
 
-	h.TaskListUsecase.DeleteTaskList(userId, taskLists...)
+	h.TaskListUsecase.DeleteTaskList(taskLists...)
 
 	c.Status(http.StatusOK)
 }
 
 func (h *TaskListHandler) UpdateTaskList(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Fatal(err)
@@ -139,17 +121,12 @@ func (h *TaskListHandler) UpdateTaskList(c *gin.Context) {
 		taskLists[i] = v.ToTaskList()
 	}
 
-	h.TaskListUsecase.UpdateTaskList(userId, taskLists...)
+	h.TaskListUsecase.UpdateTaskList(taskLists...)
 
 	c.Status(http.StatusOK)
 }
 
 func (h *TaskListHandler) SynchronizeTaskList(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	jsonData, err := c.GetRawData()
 	if err != nil {
@@ -166,7 +143,7 @@ func (h *TaskListHandler) SynchronizeTaskList(c *gin.Context) {
 		taskLists[i] = v.ToTaskList()
 	}
 
-	h.TaskListUsecase.UpdateTaskList(userId, taskLists...)
+	h.TaskListUsecase.UpdateTaskList(taskLists...)
 
 	c.Status(http.StatusOK)
 }
