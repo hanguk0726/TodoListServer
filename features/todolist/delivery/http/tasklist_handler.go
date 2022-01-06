@@ -70,15 +70,15 @@ func (h *TaskListHandler) InsertTaskList(c *gin.Context) {
 	}
 
 	var taskListDtos []dto.TaskListDto
-
-	json.Unmarshal([]byte(jsonData), &taskListDtos)
-
+	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	if err != nil {
+		log.Fatal(err)
+	}
 	taskLists := make([]domain.TaskList, len(taskListDtos))
 
 	for i, v := range taskListDtos {
 		taskLists[i] = v.ToTaskList()
 	}
-
 	h.TaskListUsecase.AddTaskList(taskLists...)
 
 	c.Status(http.StatusOK)
@@ -92,7 +92,10 @@ func (h *TaskListHandler) DeleteTaskList(c *gin.Context) {
 
 	var taskListDtos []dto.TaskListDto
 
-	json.Unmarshal([]byte(jsonData), &taskListDtos)
+	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	taskLists := make([]domain.TaskList, len(taskListDtos))
 
@@ -113,7 +116,10 @@ func (h *TaskListHandler) UpdateTaskList(c *gin.Context) {
 
 	var taskListDtos []dto.TaskListDto
 
-	json.Unmarshal([]byte(jsonData), &taskListDtos)
+	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	taskLists := make([]domain.TaskList, len(taskListDtos))
 
@@ -135,7 +141,10 @@ func (h *TaskListHandler) SynchronizeTaskList(c *gin.Context) {
 
 	var taskListDtos []dto.TaskListDto
 
-	json.Unmarshal([]byte(jsonData), &taskListDtos)
+	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	taskLists := make([]domain.TaskList, len(taskListDtos))
 

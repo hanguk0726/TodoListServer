@@ -18,14 +18,22 @@ func NewTaskListRepository(Mongo *mongo.Collection) domain.TaskListRepository {
 
 func (t *taskListRepository) AddTaskList(taskList ...domain.TaskList) {
 	if len(taskList) == 1 {
-		_, err := t.Mongo.InsertOne(context.TODO(), taskList)
+		_bson, err := bson.Marshal(taskList[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = t.Mongo.InsertOne(context.TODO(), _bson)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
 		inserts := make([]interface{}, len(taskList))
 		for i, v := range taskList {
-			inserts[i] = v
+			var err error
+			inserts[i], err = bson.Marshal(v)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 		_, err := t.Mongo.InsertMany(context.TODO(), inserts)
 		if err != nil {
@@ -35,14 +43,22 @@ func (t *taskListRepository) AddTaskList(taskList ...domain.TaskList) {
 }
 func (t *taskListRepository) DeleteTaskList(taskList ...domain.TaskList) {
 	if len(taskList) == 1 {
-		_, err := t.Mongo.DeleteOne(context.TODO(), taskList)
+		_bson, err := bson.Marshal(taskList[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = t.Mongo.DeleteOne(context.TODO(), _bson)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
 		deletes := make([]interface{}, len(taskList))
 		for i, v := range taskList {
-			deletes[i] = v
+			var err error
+			deletes[i], err = bson.Marshal(v)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 		_, err := t.Mongo.DeleteMany(context.TODO(), deletes)
 		if err != nil {
@@ -52,39 +68,54 @@ func (t *taskListRepository) DeleteTaskList(taskList ...domain.TaskList) {
 }
 func (t *taskListRepository) UpdateTaskList(taskList ...domain.TaskList) {
 	if len(taskList) == 1 {
-		_, err := t.Mongo.UpdateOne(context.TODO(), bson.E{Key: "id", Value: taskList[0].Id}, taskList)
+		update := bson.M{
+			"$set": bson.M{
+				"name":             taskList[0].Name,
+				"createdTimestamp": taskList[0].CreatedTimestamp,
+				"id":               taskList[0].Id,
+				"userId":           taskList[0].UserId}}
+		_, err := t.Mongo.UpdateOne(context.TODO(), bson.M{"id": taskList[0].Id}, update)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		var filter bson.D
+		var filter []bson.M
 		updates := make([]interface{}, len(taskList))
 		for i, v := range taskList {
-			updates[i] = v
-			filter = append(filter, bson.E{Key: "id", Value: v.Id})
+			updates[i] = bson.M{
+				"$set": bson.M{
+					"name":             v.Name,
+					"createdTimestamp": v.CreatedTimestamp,
+					"id":               v.Id,
+					"userId":           v.UserId}}
+			filter = append(filter, bson.M{"id": v.Id})
 		}
-		_, err := t.Mongo.UpdateMany(context.TODO(), filter, updates)
-		if err != nil {
-			log.Fatal(err)
+		for i, v := range updates {
+			_, err := t.Mongo.UpdateOne(context.TODO(), filter[i], v)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }
 func (t *taskListRepository) GetTaskListById(userId int64, taskListId int64) domain.TaskList {
-	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": userId, "taskListId": taskListId})
+
+	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": userId, "id": taskListId})
 	var taskList domain.TaskList
-	err := result.Decode(taskList)
+	err := result.Decode(&taskList)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return taskList
 }
 func (t *taskListRepository) GetTaskLists(userId int64) []domain.TaskList {
-	result, err := t.Mongo.Find(context.TODO(), bson.E{Key: "userId", Value: userId})
+	result, err := t.Mongo.Find(context.TODO(), bson.M{"userId": userId})
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	var taskLists []domain.TaskList
-	err = result.Decode(taskLists)
+	err = result.All(context.TODO(), &taskLists)
 	if err != nil {
 		log.Fatal(err)
 	}

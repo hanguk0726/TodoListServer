@@ -57,6 +57,7 @@ func main() {
 	taskItemUsecase := usecase.NewTaskItemUseCase(taskItemRepository)
 	http.NewTaskListHandler(router, taskListUsecase)
 	http.NewTaskItemHandler(router, taskItemUsecase)
+
 	router.Use(cors.Default())
 	err = router.Run()
 	if err != nil {
