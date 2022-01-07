@@ -34,13 +34,13 @@ func main() {
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	err = client.Ping(ctx, nil)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	db := client.Database(dbName)

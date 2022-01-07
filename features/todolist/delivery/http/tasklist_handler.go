@@ -30,7 +30,7 @@ func (h *TaskListHandler) GetTaskLists(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	taskLists := h.TaskListUsecase.GetTaskLists(userId)
@@ -49,13 +49,13 @@ func (h *TaskListHandler) GetTaskListById(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	taskListId, err := strconv.ParseInt(c.Param("taskListId"), 10, 64)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	taskList := h.TaskListUsecase.GetTaskListById(userId, taskListId)
@@ -66,13 +66,13 @@ func (h *TaskListHandler) GetTaskListById(c *gin.Context) {
 func (h *TaskListHandler) InsertTaskList(c *gin.Context) {
 	jsonData, err := c.GetRawData()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	var taskListDtos []dto.TaskListDto
 	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	taskLists := make([]domain.TaskList, len(taskListDtos))
 
@@ -87,14 +87,14 @@ func (h *TaskListHandler) InsertTaskList(c *gin.Context) {
 func (h *TaskListHandler) DeleteTaskList(c *gin.Context) {
 	jsonData, err := c.GetRawData()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	var taskListDtos []dto.TaskListDto
 
 	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	taskLists := make([]domain.TaskList, len(taskListDtos))
@@ -111,14 +111,14 @@ func (h *TaskListHandler) DeleteTaskList(c *gin.Context) {
 func (h *TaskListHandler) UpdateTaskList(c *gin.Context) {
 	jsonData, err := c.GetRawData()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	var taskListDtos []dto.TaskListDto
 
 	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	taskLists := make([]domain.TaskList, len(taskListDtos))
@@ -136,14 +136,14 @@ func (h *TaskListHandler) SynchronizeTaskList(c *gin.Context) {
 
 	jsonData, err := c.GetRawData()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	var taskListDtos []dto.TaskListDto
 
 	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	taskLists := make([]domain.TaskList, len(taskListDtos))

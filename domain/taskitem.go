@@ -4,9 +4,10 @@ type TaskItem struct {
 	Title       string `json:"title" bson:"title"`
 	Detail      string `json:"detail" bson:"detail"`
 	IsCompleted bool   `json:"is_completed" bson:"isCompleted"`
-	Timestamp   string `json:"timestamp" bson:"timestamp"`
+	Timestamp   int64  `json:"timestamp" bson:"timestamp"`
 	TaskListId  int64  `json:"task_list_id" bson:"taskListId"`
 	Id          int64  `json:"id" bson:"id"`
+	UserId      int64  `json:"user_id" bson:"userId"`
 }
 
 type TaskItemUsecase interface {

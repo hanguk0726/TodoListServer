@@ -18,75 +18,108 @@ func NewTaskItemRepository(Mongo *mongo.Collection) domain.TaskItemRepository {
 
 func (t *taskItemRepository) AddTaskItem(taskItem ...domain.TaskItem) {
 	if len(taskItem) == 1 {
-		_, err := t.Mongo.InsertOne(context.TODO(), taskItem)
+		_bson, err := bson.Marshal(taskItem[0])
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+		}
+		_, err = t.Mongo.InsertOne(context.TODO(), _bson)
+		if err != nil {
+			log.Println(err)
 		}
 	} else {
 		inserts := make([]interface{}, len(taskItem))
 		for i, v := range taskItem {
-			inserts[i] = v
+			var err error
+			inserts[i], err = bson.Marshal(v)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 		_, err := t.Mongo.InsertMany(context.TODO(), inserts)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}
 }
 func (t *taskItemRepository) DeleteTaskItem(taskItem ...domain.TaskItem) {
 	if len(taskItem) == 1 {
-		_, err := t.Mongo.DeleteOne(context.TODO(), taskItem)
+		_bson, err := bson.Marshal(taskItem[0])
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+		}
+		_, err = t.Mongo.DeleteOne(context.TODO(), _bson)
+		if err != nil {
+			log.Println(err)
 		}
 	} else {
 		deletes := make([]interface{}, len(taskItem))
 		for i, v := range taskItem {
-			deletes[i] = v
+			var err error
+			deletes[i], err = bson.Marshal(v)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 		_, err := t.Mongo.DeleteMany(context.TODO(), deletes)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}
 }
 func (t *taskItemRepository) UpdateTaskItem(taskItem ...domain.TaskItem) {
 	if len(taskItem) == 1 {
-		_, err := t.Mongo.UpdateOne(context.TODO(), bson.E{Key: "id", Value: taskItem[0].Id}, taskItem)
+		update := bson.M{
+			"$set": bson.M{
+				"title":       taskItem[0].Title,
+				"detail":      taskItem[0].Detail,
+				"isCompleted": taskItem[0].IsCompleted,
+				"timestamp":   taskItem[0].Timestamp,
+				"taskListId":  taskItem[0].TaskListId,
+				"id":          taskItem[0].Id}}
+		_, err := t.Mongo.UpdateOne(context.TODO(), bson.M{"id": taskItem[0].Id}, update)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	} else {
-		var filter bson.D
+		var filter []bson.M
 		updates := make([]interface{}, len(taskItem))
 		for i, v := range taskItem {
-			updates[i] = v
-			filter = append(filter, bson.E{Key: "id", Value: v.Id})
+			updates[i] = bson.M{
+				"$set": bson.M{
+					"title":       taskItem[0].Title,
+					"detail":      taskItem[0].Detail,
+					"isCompleted": taskItem[0].IsCompleted,
+					"timestamp":   taskItem[0].Timestamp,
+					"taskListId":  taskItem[0].TaskListId,
+					"id":          taskItem[0].Id}}
+			filter = append(filter, bson.M{"id": v.Id})
 		}
-		_, err := t.Mongo.UpdateMany(context.TODO(), filter, updates)
-		if err != nil {
-			log.Fatal(err)
+		for i, v := range updates {
+			_, err := t.Mongo.UpdateOne(context.TODO(), filter[i], v)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 }
 func (t *taskItemRepository) GetTaskItemById(userId int64, taskItemId int64) domain.TaskItem {
-	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": userId, "taskItemId": taskItemId})
+	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": userId, "id": taskItemId})
 	var taskItem domain.TaskItem
-	err := result.Decode(taskItem)
+	err := result.Decode(&taskItem)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return taskItem
 }
 func (t *taskItemRepository) GetTaskItemsByTaskListId(userId int64, taskListId int64) []domain.TaskItem {
-	result, err := t.Mongo.Find(context.TODO(), bson.E{Key: "userId", Value: userId})
+	result, err := t.Mongo.Find(context.TODO(), bson.M{"userId": userId, "taskListId": taskListId})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	var taskItems []domain.TaskItem
-	err = result.Decode(taskItems)
+	err = result.All(context.TODO(), &taskItems)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return taskItems
 }
