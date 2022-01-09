@@ -25,6 +25,17 @@ func (t *taskItemUseCase) DeleteTaskItem(taskItem ...domain.TaskItem) {
 func (t *taskItemUseCase) UpdateTaskItem(taskItem ...domain.TaskItem) {
 	t.taskItemRepository.UpdateTaskItem(taskItem...)
 }
+
+func (t *taskItemUseCase) SynchronizeTaskList(taskItem ...domain.TaskItem) {
+	for _, v := range taskItem {
+		if t.taskItemRepository.DoesExists(v) {
+			t.taskItemRepository.UpdateTaskItem(v)
+		} else {
+			t.taskItemRepository.AddTaskItem(v)
+		}
+	}
+}
+
 func (t *taskItemUseCase) GetTaskItemById(userId string, taskItemId int64) domain.TaskItem {
 	return t.taskItemRepository.GetTaskItemById(userId, taskItemId)
 }

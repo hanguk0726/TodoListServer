@@ -13,6 +13,7 @@ type TaskListUsecase interface {
 	GetTaskListById(userId string, taskListId int64) TaskList
 	GetTaskLists(userId string) []TaskList
 	UpdateTaskList(taskList ...TaskList)
+	SynchronizeTaskList(taskList ...TaskList)
 }
 
 type TaskListRepository interface {
@@ -21,4 +22,5 @@ type TaskListRepository interface {
 	GetTaskListById(userId string, taskListId int64) TaskList
 	GetTaskLists(userId string) []TaskList
 	UpdateTaskList(taskList ...TaskList)
+	DoesExists(taskList TaskList) bool
 }

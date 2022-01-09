@@ -16,6 +16,7 @@ type TaskItemUsecase interface {
 	GetTaskItemById(userId string, taskItemId int64) TaskItem
 	GetTaskItemsByTaskListId(userId string, taskListId int64) []TaskItem
 	UpdateTaskItem(taskItem ...TaskItem)
+	SynchronizeTaskList(taskItem ...TaskItem)
 }
 
 type TaskItemRepository interface {
@@ -24,4 +25,5 @@ type TaskItemRepository interface {
 	GetTaskItemById(userId string, taskItemId int64) TaskItem
 	GetTaskItemsByTaskListId(userId string, taskListId int64) []TaskItem
 	UpdateTaskItem(taskItem ...TaskItem)
+	DoesExists(taskItem TaskItem) bool
 }
