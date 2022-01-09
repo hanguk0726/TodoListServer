@@ -23,9 +23,9 @@ func (t *taskListUseCase) DeleteTaskList(taskList ...domain.TaskList) {
 func (t *taskListUseCase) UpdateTaskList(taskList ...domain.TaskList) {
 	t.taskListRepository.UpdateTaskList(taskList...)
 }
-func (t *taskListUseCase) GetTaskListById(userId int64, taskListId int64) domain.TaskList {
+func (t *taskListUseCase) GetTaskListById(userId string, taskListId int64) domain.TaskList {
 	return t.taskListRepository.GetTaskListById(userId, taskListId)
 }
-func (t *taskListUseCase) GetTaskLists(userId int64) []domain.TaskList {
+func (t *taskListUseCase) GetTaskLists(userId string) []domain.TaskList {
 	return t.taskListRepository.GetTaskLists(userId)
 }

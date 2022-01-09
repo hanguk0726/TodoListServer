@@ -25,10 +25,10 @@ func (t *taskItemUseCase) DeleteTaskItem(taskItem ...domain.TaskItem) {
 func (t *taskItemUseCase) UpdateTaskItem(taskItem ...domain.TaskItem) {
 	t.taskItemRepository.UpdateTaskItem(taskItem...)
 }
-func (t *taskItemUseCase) GetTaskItemById(userId int64, taskItemId int64) domain.TaskItem {
+func (t *taskItemUseCase) GetTaskItemById(userId string, taskItemId int64) domain.TaskItem {
 	return t.taskItemRepository.GetTaskItemById(userId, taskItemId)
 }
 
-func (t *taskItemUseCase) GetTaskItemsByTaskListId(userId int64, taskListId int64) []domain.TaskItem {
+func (t *taskItemUseCase) GetTaskItemsByTaskListId(userId string, taskListId int64) []domain.TaskItem {
 	return t.taskItemRepository.GetTaskItemsByTaskListId(userId, taskListId)
 }

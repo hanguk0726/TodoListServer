@@ -27,11 +27,8 @@ func NewTaskItemHandler(r *gin.Engine, usecase domain.TaskItemUsecase) {
 }
 
 func (h *TaskItemHandler) GetTaskItemsByTaskListId(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
 
-	if err != nil {
-		log.Println(err)
-	}
+	userId := c.Query("userId")
 
 	taskListId, err := strconv.ParseInt(c.Param("taskListId"), 10, 64)
 
@@ -52,11 +49,7 @@ func (h *TaskItemHandler) GetTaskItemsByTaskListId(c *gin.Context) {
 
 func (h *TaskItemHandler) GetTaskItemById(c *gin.Context) {
 
-	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
-
-	if err != nil {
-		log.Println(err)
-	}
+	userId := c.Query("userId")
 
 	taskItemId, err := strconv.ParseInt(c.Query("taskItemId"), 10, 64)
 
@@ -77,7 +70,11 @@ func (h *TaskItemHandler) InsertTaskItem(c *gin.Context) {
 
 	var taskItemDtos []dto.TaskItemDto
 
-	json.Unmarshal([]byte(jsonData), &taskItemDtos)
+	err = json.Unmarshal([]byte(jsonData), &taskItemDtos)
+
+	if err != nil {
+		log.Println(err)
+	}
 
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 

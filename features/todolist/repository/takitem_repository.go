@@ -70,12 +70,12 @@ func (t *taskItemRepository) UpdateTaskItem(taskItem ...domain.TaskItem) {
 	if len(taskItem) == 1 {
 		update := bson.M{
 			"$set": bson.M{
-				"title":       taskItem[0].Title,
-				"detail":      taskItem[0].Detail,
-				"isCompleted": taskItem[0].IsCompleted,
-				"timestamp":   taskItem[0].Timestamp,
-				"taskListId":  taskItem[0].TaskListId,
-				"id":          taskItem[0].Id}}
+				"title":            taskItem[0].Title,
+				"detail":           taskItem[0].Detail,
+				"isCompleted":      taskItem[0].IsCompleted,
+				"createdTimestamp": taskItem[0].CreatedTimestamp,
+				"taskListId":       taskItem[0].TaskListId,
+				"id":               taskItem[0].Id}}
 		_, err := t.Mongo.UpdateOne(context.TODO(), bson.M{"id": taskItem[0].Id}, update)
 		if err != nil {
 			log.Println(err)
@@ -86,12 +86,12 @@ func (t *taskItemRepository) UpdateTaskItem(taskItem ...domain.TaskItem) {
 		for i, v := range taskItem {
 			updates[i] = bson.M{
 				"$set": bson.M{
-					"title":       taskItem[0].Title,
-					"detail":      taskItem[0].Detail,
-					"isCompleted": taskItem[0].IsCompleted,
-					"timestamp":   taskItem[0].Timestamp,
-					"taskListId":  taskItem[0].TaskListId,
-					"id":          taskItem[0].Id}}
+					"title":            taskItem[0].Title,
+					"detail":           taskItem[0].Detail,
+					"isCompleted":      taskItem[0].IsCompleted,
+					"createdTimestamp": taskItem[0].CreatedTimestamp,
+					"taskListId":       taskItem[0].TaskListId,
+					"id":               taskItem[0].Id}}
 			filter = append(filter, bson.M{"id": v.Id})
 		}
 		for i, v := range updates {
@@ -102,7 +102,7 @@ func (t *taskItemRepository) UpdateTaskItem(taskItem ...domain.TaskItem) {
 		}
 	}
 }
-func (t *taskItemRepository) GetTaskItemById(userId int64, taskItemId int64) domain.TaskItem {
+func (t *taskItemRepository) GetTaskItemById(userId string, taskItemId int64) domain.TaskItem {
 	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": userId, "id": taskItemId})
 	var taskItem domain.TaskItem
 	err := result.Decode(&taskItem)
@@ -111,7 +111,7 @@ func (t *taskItemRepository) GetTaskItemById(userId int64, taskItemId int64) dom
 	}
 	return taskItem
 }
-func (t *taskItemRepository) GetTaskItemsByTaskListId(userId int64, taskListId int64) []domain.TaskItem {
+func (t *taskItemRepository) GetTaskItemsByTaskListId(userId string, taskListId int64) []domain.TaskItem {
 	result, err := t.Mongo.Find(context.TODO(), bson.M{"userId": userId, "taskListId": taskListId})
 	if err != nil {
 		log.Println(err)

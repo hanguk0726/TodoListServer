@@ -27,11 +27,7 @@ func NewTaskListHandler(r *gin.Engine, usecase domain.TaskListUsecase) {
 }
 
 func (h *TaskListHandler) GetTaskLists(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
-
-	if err != nil {
-		log.Println(err)
-	}
+	userId := c.Query("userId")
 
 	taskLists := h.TaskListUsecase.GetTaskLists(userId)
 
@@ -46,11 +42,7 @@ func (h *TaskListHandler) GetTaskLists(c *gin.Context) {
 
 func (h *TaskListHandler) GetTaskListById(c *gin.Context) {
 
-	userId, err := strconv.ParseInt(c.Query("userId"), 10, 64)
-
-	if err != nil {
-		log.Println(err)
-	}
+	userId := c.Query("userId")
 
 	taskListId, err := strconv.ParseInt(c.Param("taskListId"), 10, 64)
 

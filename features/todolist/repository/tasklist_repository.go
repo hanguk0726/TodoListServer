@@ -98,7 +98,7 @@ func (t *taskListRepository) UpdateTaskList(taskList ...domain.TaskList) {
 		}
 	}
 }
-func (t *taskListRepository) GetTaskListById(userId int64, taskListId int64) domain.TaskList {
+func (t *taskListRepository) GetTaskListById(userId string, taskListId int64) domain.TaskList {
 
 	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": userId, "id": taskListId})
 	var taskList domain.TaskList
@@ -108,7 +108,7 @@ func (t *taskListRepository) GetTaskListById(userId int64, taskListId int64) dom
 	}
 	return taskList
 }
-func (t *taskListRepository) GetTaskLists(userId int64) []domain.TaskList {
+func (t *taskListRepository) GetTaskLists(userId string) []domain.TaskList {
 	result, err := t.Mongo.Find(context.TODO(), bson.M{"userId": userId})
 	if err != nil {
 		log.Println(err)

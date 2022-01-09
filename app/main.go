@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/spf13/viper"
 	"log"
+	"net"
 	"time"
 	"todolist-server/features/todolist/delivery/http"
 	"todolist-server/features/todolist/repository"
@@ -23,10 +24,19 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	log.Printf("IP Address :: %v \n", localAddr.IP)
 }
 
 func main() {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 180*time.Second)
 	dbHost := viper.GetString(`database.host`)
 	dbPort := viper.GetString(`database.port`)
 	dbName := viper.GetString(`database.name`)
