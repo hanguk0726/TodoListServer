@@ -146,7 +146,7 @@ func (h *TaskItemHandler) SynchronizeTaskItem(c *gin.Context) {
 		taskItems[i] = v.ToTaskItem()
 	}
 
-	h.TaskItemUsecase.UpdateTaskItem(taskItems...)
+	h.TaskItemUsecase.SynchronizeTaskList(taskItems...)
 
 	c.Status(http.StatusOK)
 }
