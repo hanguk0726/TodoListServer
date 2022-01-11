@@ -19,24 +19,62 @@ import (
 )
 
 func init() {
+	setUpReadingEnvironmentFile()
+	logLocalIpAddress()
+}
+
+func main() {
+	db := getDatabase()
+
+	router := gin.Default()
+	router.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	taskListRepository := repository.NewTaskListRepository(db.Collection("taskList"))
+	taskItemRepository := repository.NewTaskItemRepository(db.Collection("taskItem"))
+	taskListUsecase := usecase.NewTaskListUseCase(taskListRepository)
+	taskItemUsecase := usecase.NewTaskItemUseCase(taskItemRepository)
+	http.NewTaskListHandler(router, taskListUsecase)
+	http.NewTaskItemHandler(router, taskItemUsecase)
+
+	router.Use(cors.Default())
+
+	err := router.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func setUpReadingEnvironmentFile() {
 	viper.SetConfigFile(`config.json`)
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(err)
 	}
+}
 
+func logLocalIpAddress() {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-	defer conn.Close()
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(conn)
 
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 	log.Printf("IP Address :: %v \n", localAddr.IP)
 }
 
-func main() {
-	ctx, _ := context.WithTimeout(context.Background(), 180*time.Second)
+func getDatabase() *mongo.Database {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	dbHost := viper.GetString(`database.host`)
 	dbPort := viper.GetString(`database.port`)
 	dbName := viper.GetString(`database.name`)
@@ -53,24 +91,5 @@ func main() {
 		log.Println(err)
 	}
 
-	db := client.Database(dbName)
-
-	router := gin.Default()
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	taskListRepository := repository.NewTaskListRepository(db.Collection("taskList"))
-	taskItemRepository := repository.NewTaskItemRepository(db.Collection("taskItem"))
-	taskListUsecase := usecase.NewTaskListUseCase(taskListRepository)
-	taskItemUsecase := usecase.NewTaskItemUseCase(taskItemRepository)
-	http.NewTaskListHandler(router, taskListUsecase)
-	http.NewTaskItemHandler(router, taskItemUsecase)
-
-	router.Use(cors.Default())
-	err = router.Run()
-	if err != nil {
-		panic(err)
-	}
+	return client.Database(dbName)
 }

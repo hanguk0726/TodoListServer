@@ -62,7 +62,7 @@ func (h *TaskListHandler) InsertTaskList(c *gin.Context) {
 	}
 
 	var taskListDtos []dto.TaskListDto
-	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	err = json.Unmarshal(jsonData, &taskListDtos)
 	if err != nil {
 		log.Println(err)
 	}
@@ -84,7 +84,7 @@ func (h *TaskListHandler) DeleteTaskList(c *gin.Context) {
 
 	var taskListDtos []dto.TaskListDto
 
-	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	err = json.Unmarshal(jsonData, &taskListDtos)
 	if err != nil {
 		log.Println(err)
 	}
@@ -108,7 +108,7 @@ func (h *TaskListHandler) UpdateTaskList(c *gin.Context) {
 
 	var taskListDtos []dto.TaskListDto
 
-	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	err = json.Unmarshal(jsonData, &taskListDtos)
 	if err != nil {
 		log.Println(err)
 	}
@@ -133,7 +133,7 @@ func (h *TaskListHandler) SynchronizeTaskList(c *gin.Context) {
 
 	var taskListDtos []dto.TaskListDto
 
-	err = json.Unmarshal([]byte(jsonData), &taskListDtos)
+	err = json.Unmarshal(jsonData, &taskListDtos)
 	if err != nil {
 		log.Println(err)
 	}

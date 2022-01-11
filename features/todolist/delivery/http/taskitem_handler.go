@@ -70,7 +70,7 @@ func (h *TaskItemHandler) InsertTaskItem(c *gin.Context) {
 
 	var taskItemDtos []dto.TaskItemDto
 
-	err = json.Unmarshal([]byte(jsonData), &taskItemDtos)
+	err = json.Unmarshal(jsonData, &taskItemDtos)
 
 	if err != nil {
 		log.Println(err)
@@ -96,7 +96,10 @@ func (h *TaskItemHandler) DeleteTask(c *gin.Context) {
 
 	var taskItemDtos []dto.TaskItemDto
 
-	json.Unmarshal([]byte(jsonData), &taskItemDtos)
+	err = json.Unmarshal(jsonData, &taskItemDtos)
+	if err != nil {
+		log.Println(err)
+	}
 
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 
@@ -117,7 +120,10 @@ func (h *TaskItemHandler) UpdateTaskItem(c *gin.Context) {
 
 	var taskItemDtos []dto.TaskItemDto
 
-	json.Unmarshal([]byte(jsonData), &taskItemDtos)
+	err = json.Unmarshal(jsonData, &taskItemDtos)
+	if err != nil {
+		log.Println(err)
+	}
 
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 
@@ -138,7 +144,10 @@ func (h *TaskItemHandler) SynchronizeTaskItem(c *gin.Context) {
 
 	var taskItemDtos []dto.TaskItemDto
 
-	json.Unmarshal([]byte(jsonData), &taskItemDtos)
+	err = json.Unmarshal(jsonData, &taskItemDtos)
+	if err != nil {
+		log.Println(err)
+	}
 
 	taskItems := make([]domain.TaskItem, len(taskItemDtos))
 
