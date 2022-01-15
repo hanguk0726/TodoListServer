@@ -2,6 +2,7 @@
   "database": {
     "host": "localhost",
     "port": "27017",
-    "name": "todolist"
+    "name": "todolist",
+    "remote_uri": "mongodb+srv://cluster0.cqoqf.mongodb.net/myFirstDatabase?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority"
   }
 }

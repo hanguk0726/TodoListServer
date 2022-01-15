@@ -75,10 +75,11 @@ func logLocalIpAddress() {
 func getDatabase() *mongo.Database {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	dbHost := viper.GetString(`database.host`)
-	dbPort := viper.GetString(`database.port`)
+	//dbHost := viper.GetString(`database.host`)
+	//dbPort := viper.GetString(`database.port`)
 	dbName := viper.GetString(`database.name`)
-	uri := fmt.Sprintf("mongodb://%s:%s", dbHost, dbPort)
+	remoteUri := viper.GetString(`database.remote_uri`)
+	uri := fmt.Sprintf("%v", remoteUri)
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
