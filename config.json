@@ -3,6 +3,8 @@
     "host": "localhost",
     "port": "27017",
     "name": "todolist",
-    "remote_uri": "mongodb+srv://cluster0.cqoqf.mongodb.net/myFirstDatabase?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority"
+    "user": "user-a",
+    "password": "4QrUMArzO3oR81II",
+    "remote_uri": "cluster0.cqoqf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
   }
 }

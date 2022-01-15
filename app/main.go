@@ -78,8 +78,10 @@ func getDatabase() *mongo.Database {
 	//dbHost := viper.GetString(`database.host`)
 	//dbPort := viper.GetString(`database.port`)
 	dbName := viper.GetString(`database.name`)
+	dbUser := viper.GetString(`database.user`)
+	dbPassword := viper.GetString(`database.password`)
 	remoteUri := viper.GetString(`database.remote_uri`)
-	uri := fmt.Sprintf("%v", remoteUri)
+	uri := fmt.Sprintf("mongodb+srv://%v:%v@%v", dbUser, dbPassword, remoteUri)
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
