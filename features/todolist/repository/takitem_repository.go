@@ -125,7 +125,7 @@ func (t *taskItemRepository) GetTaskItemsByTaskListId(userId string, taskListId 
 }
 
 func (t *taskItemRepository) DoesExists(taskItem domain.TaskItem) bool {
-	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": taskItem.UserId, "taskListId": taskItem.TaskListId})
+	result := t.Mongo.FindOne(context.TODO(), bson.M{"userId": taskItem.UserId, "taskListId": taskItem.TaskListId, "id": taskItem.Id})
 	err := result.Err()
 	if err != nil {
 		return false
